@@ -10,6 +10,7 @@ mongoose.connect('mongodb://localhost:27017/sherk');
   pic schema
   -----------
   var pic = {
+    pidId: 123_1
     imageSegments: 3,
     players: ['123', '125', '1334'],
     completedImage: '12343242ef123213ab234210',
@@ -30,12 +31,6 @@ mongoose.connect('mongodb://localhost:27017/sherk');
   }
 */
 
-var playerSchema = new Schema({
-  player: String,
-  picId: [Number],
-  subImages: [Schema.Types.Mixed]
-}, {collection: 'pics'});
-
 var picSchema = new Schema({
   picId: Number,
   imageSegments: Number,
@@ -44,7 +39,13 @@ var picSchema = new Schema({
   subImages: [Schema.Types.Mixed]
 }, {collection: 'pics'});
 
+var playerSchema = new Schema({
+  player: String,
+  picIds: [String]
+}, {collection: 'players'});
+
 var PicModel = mongoose.model('pic', picSchema);
+var PlayerModel = mongoose.model('player', playerSchema);
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -58,8 +59,11 @@ router.get('/pic/:id', function(req, res, next) {
 
 router.post('/pic/initialiseImage', function(req, res, next) {
   var userId = req.body.userId;
-  var imageData = req.body.imageData;
-  var nextImageData = req.body.nextImageData;
+
+  PlayerModel.find({player: userId}, function(err, players) {
+    var newPicId = players.picIds.length + 1;
+    
+  });
 });
 
 router.post('/pic/addSubImage', function(req, res, next) {
