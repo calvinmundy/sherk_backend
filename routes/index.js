@@ -57,12 +57,49 @@ router.get('/pic/:id', function(req, res, next) {
   res.json({"id":  req.params.id});
 });
 
+router.post('/pic/addPlayer', function(req, res, next) {
+  var player = req.body.userId;
+//router.get('/addPlayer/:userId', function(req, res, next) {
+//  var player = req.params.userId;
+  PlayerModel.find({userId: player}, function(err, players) {
+    if (players.length === 0) {
+      var newPlayer = new PlayerModel({player: player});
+      newPlayer.save(function(err) {
+        if (err) {
+          return;
+        }
+        res.json({player: player});
+      });
+    }
+  });
+});
+
 router.post('/pic/initialiseImage', function(req, res, next) {
   var userId = req.body.userId;
 
-  PlayerModel.find({player: userId}, function(err, players) {
-    var newPicId = players.picIds.length + 1;
-    
+  PlayerModel.findOne({player: userId}, function(err, player) {
+    var newPicId = player.picIds.length + 1;
+    //check if pic with id exists already, and create it if it doesn't
+    PicModel.find({picId: newPicId}, function(err, pics) {
+      if (pics.length === 0) {
+        //create new pic
+        var newPic = new PicModel({picId: newPicId});
+        newPic.save(function(err) {
+          if (err) {
+            //error
+            return;
+          }
+          //if the save was successful, we can add the pic id to the player
+          player.picIds.push(newPicId);
+          player.save(function(err) {
+            if (err) {
+              return;
+            }
+            res.json({initialised: true});
+          });
+        });
+      }
+    });
   });
 });
 
