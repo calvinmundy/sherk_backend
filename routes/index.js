@@ -57,13 +57,20 @@ router.get('/pic/:id', function(req, res, next) {
   res.json({"id":  req.params.id});
 });
 
-router.post('/pic/addPlayer', function(req, res, next) {
-  var player = req.body.userId;
-//router.get('/addPlayer/:userId', function(req, res, next) {
-//  var player = req.params.userId;
-  PlayerModel.find({userId: player}, function(err, players) {
+router.get('/getUsers', function(req, res, next) {
+  PlayerModel.find({}, function(err, playerDocs) {
+    console.log('players: ' + playerDocs.length);
+    res.json(playerDocs);
+  });
+});
+
+//router.post('/addPlayer', function(req, res, next) {
+//  var player = req.body.userId;
+router.get('/addPlayer/:userId', function(req, res, next) {
+  var player = req.params.userId;
+  PlayerModel.find({player: player}, function(err, players) {
     if (players.length === 0) {
-      var newPlayer = new PlayerModel({player: player});
+      var newPlayer = new PlayerModel({player: player, picIds: []});
       newPlayer.save(function(err) {
         if (err) {
           return;
@@ -74,7 +81,7 @@ router.post('/pic/addPlayer', function(req, res, next) {
   });
 });
 
-router.post('/pic/initialiseImage', function(req, res, next) {
+router.post('/initialiseImage', function(req, res, next) {
   var userId = req.body.userId;
 
   PlayerModel.findOne({player: userId}, function(err, player) {
@@ -103,7 +110,7 @@ router.post('/pic/initialiseImage', function(req, res, next) {
   });
 });
 
-router.post('/pic/addSubImage', function(req, res, next) {
+router.post('/addSubImage', function(req, res, next) {
   var picId = req.body.picId;
   var userId = req.body.userId;
   var imageData = req.body.imageData;
