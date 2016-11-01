@@ -10,7 +10,7 @@ mongoose.connect('mongodb://localhost:27017/sherk');
   pic schema
   -----------
   var pic = {
-    pidId: 123_1
+    picId: 123_1
     imageSegments: 3,
     players: ['123', '125', '1334'],
     completedImage: '12343242ef123213ab234210',
