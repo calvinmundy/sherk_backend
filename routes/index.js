@@ -83,6 +83,7 @@ router.get('/addPlayer/:userId', function(req, res, next) {
 
 router.post('/initialiseImage', function(req, res, next) {
   var userId = req.body.userId;
+  var imageSegments = req.body.playerCnt;
 
   PlayerModel.findOne({player: userId}, function(err, player) {
     var newPicId = player.picIds.length + 1;
@@ -90,7 +91,13 @@ router.post('/initialiseImage', function(req, res, next) {
     PicModel.find({picId: newPicId}, function(err, pics) {
       if (pics.length === 0) {
         //create new pic
-        var newPic = new PicModel({picId: newPicId});
+        var newPic = new PicModel({
+          picId: newPicId,
+          imageSegments: playerCnt,
+          players: [],
+          completedImage: null,
+          subImages: []
+        });
         newPic.save(function(err) {
           if (err) {
             //error
