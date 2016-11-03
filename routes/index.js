@@ -122,6 +122,20 @@ router.post('/addSubImage', function(req, res, next) {
   var userId = req.body.userId;
   var imageData = req.body.imageData;
   var nextImageData = req.body.nextImageData;
+
+  PicModel.findOne({picId: picId}, function(err, pic) {
+    if (err) {
+      return;
+    }
+    var picIndex = pic.subImages.length;
+    if (pic.players.length > picIndex && pic.players[picIndex] === userId) {
+      var subImage = {
+        imageData: imageData,
+        nextImage: nextImageData
+      };
+      pic.subImages.push(subImage);
+    }
+  });
 });
 
 
