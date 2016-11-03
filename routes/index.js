@@ -131,9 +131,37 @@ router.post('/addSubImage', function(req, res, next) {
     if (pic.players.length > picIndex && pic.players[picIndex] === userId) {
       var subImage = {
         imageData: imageData,
-        nextImage: nextImageData
+        nextImage: nextImageData !== '' ? nextImageData : null
       };
       pic.subImages.push(subImage);
+      pic.save(function(saveErr) {
+        if (saveErr) {
+          res.json({subImageAdded: false});
+          return;
+        }
+        res.json({subImageAdded: true});
+      });
+    }
+  });
+});
+
+router.post('/addPicPlayer', function(req, res, next) {
+  var picId = req.body.picId;
+  var userId = req.body.userId;
+
+  PicModel.findOne({picId: picId}, function(err, pic) {
+    if (err) {
+      return;
+    }
+    if (pic.players.length < pic.imageSegments) {
+      pic.players.push(userId);
+      pic.save(function(saveErr) {
+        if (saveErr) {
+          res.json({playerAdded: false});
+          return;
+        }
+        res.json({playerAdded: true});
+      });
     }
   });
 });
